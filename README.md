@@ -22,23 +22,17 @@ Dengan latar belakang Teknik Elektronika Industri dan minat pada Embedded System
 
 Setiap kali ada perubahan kode yang di-push atau pull request dibuat ke branch `main`, GitHub Actions menjalankan pipeline di runner Ubuntu:
 
-```text
-[Developer (Windows)]
-       |
-       | git push origin main atau pull request ke main
-       v
-[GitHub Repository]
-       |
-       | Trigger workflow
-       v
-[GitHub Actions Runner (Ubuntu)]
-       ├── Checkout source code
-       ├── Setup Python 3.10
-       ├── Install dependencies dari requirements.txt
-       ├── Run automated QA tests dengan Pytest
-       |        ├── FAIL: hentikan workflow
-       |        └── PASS: lanjutkan pipeline
-       └── Build Docker image
+```mermaid
+flowchart TD
+    A["Developer: git push atau pull request ke main"] --> B["GitHub Repository"]
+    B --> C["GitHub Actions Runner: Ubuntu"]
+    C --> D["Checkout source code"]
+    D --> E["Setup Python 3.10"]
+    E --> F["Install requirements.txt"]
+    F --> G["Run tests dengan Pytest"]
+    G --> H{"Semua test lulus?"}
+    H -- "Tidak" --> I["Workflow gagal dan berhenti"]
+    H -- "Ya" --> J["Build Docker image"]
 ```
 
 Workflow menguji kode dan membangun image. Workflow ini belum mem-publish image ke registry atau men-deploy aplikasi.
