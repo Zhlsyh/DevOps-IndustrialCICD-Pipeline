@@ -1,134 +1,274 @@
-# DevOps-IndustrialCICD-Pipeline
+# 🚀 End-to-End Automated CI/CD Pipeline for Industrial Telemetry API
 
-End-to-end automated CI/CD pipeline for an industrial telemetry web API built with FastAPI, Pytest, Docker, and GitHub Actions. This project represents my learning journey from a blank canvas into the world of modern DevOps, QA automation, and software delivery workflows.
+![CI/CD Build Status](https://github.com/zhlsyh/DevOps-IndustrialCICD-Pipeline/actions/workflows/ci-cd.yml/badge.svg?branch=main)
+![Python Version](https://img.shields.io/badge/python-3.10-blue.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.142.2-009688?logo=fastapi&logoColor=white)
+![Docker Supported](https://img.shields.io/badge/docker-containerized-blue?logo=docker&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/zhlsyh/DevOps-IndustrialCICD-Pipeline/ci-cd.yml?branch=main&label=CI%2FCD)
-![Python 3.10](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)
-![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+Repositori ini berisi proyek portofolio **Automated CI/CD Pipeline** untuk Web API telemetri IoT industri. Proyek ini saya mulai dari kanvas kosong di Windows untuk mempelajari proses pengembangan API, pengujian otomatis, containerization, dan workflow GitHub Actions.
 
-## Overview
+Dengan latar belakang Teknik Elektronika Industri dan minat pada Embedded Systems, IoT, Computer Vision, serta Web/Backend Development, saya mengembangkan proyek ini sebagai latihan integrasi software engineering, QA automation, dan DevOps.
 
-This repository showcases a lightweight industrial telemetry API that simulates sensor/device monitoring with automated validation and deployment automation. It was created as a practical exercise to connect embedded systems thinking, backend development, and professional DevOps practices in one educational project.
+## 🛠️ Tech Stack & Tools
 
-The project demonstrates how a simple API can evolve from local development into a structured CI/CD pipeline with automated testing and container-based execution.
+- **Backend API:** Python 3.10, FastAPI, Uvicorn
+- **Automated Testing & QA:** Pytest, HTTPX, FastAPI TestClient
+- **Containerization:** Docker dengan base image `python:3.10-slim`
+- **CI/CD Automation:** GitHub Actions dengan Ubuntu runner
+- **Version Control & Local OS:** Git, Windows CMD/PowerShell, Python Launcher `py`
 
-## System Architecture / CI-CD Flow
+## 🏗️ Arsitektur & Alur CI/CD
 
-```mermaid
-flowchart LR
-    A[Git Push to main branch] --> B[Automated Testing with Pytest]
-    B --> C[Docker Image Build]
-    C --> D[GitHub Actions Runner]
-    D --> E[Validation & Deployment Readiness]
+Setiap kali ada perubahan kode yang di-push atau pull request dibuat ke branch `main`, GitHub Actions menjalankan pipeline di runner Ubuntu:
+
+```text
+[Developer (Windows)]
+       |
+       | git push origin main atau pull request ke main
+       v
+[GitHub Repository]
+       |
+       | Trigger workflow
+       v
+[GitHub Actions Runner (Ubuntu)]
+       ├── Checkout source code
+       ├── Setup Python 3.10
+       ├── Install dependencies dari requirements.txt
+       ├── Run automated QA tests dengan Pytest
+       |        ├── FAIL: hentikan workflow
+       |        └── PASS: lanjutkan pipeline
+       └── Build Docker image
 ```
 
-This workflow follows a simple but realistic engineering pipeline:
+Workflow menguji kode dan membangun image. Workflow ini belum mem-publish image ke registry atau men-deploy aplikasi.
 
-Git Push (Main Branch) -> Automated Testing (Pytest) -> Docker Image Build -> GitHub Actions Runner
+## ✨ Fitur
 
-## Tech Stack & Tools
+- Endpoint `GET /` untuk memeriksa status API.
+- Endpoint `GET /telemetry/{device_id}` untuk membaca telemetri simulasi `ESP32_01`.
+- API mengembalikan HTTP `404` untuk device ID yang tidak dikenal.
+- Automated tests memvalidasi respons API dan penanganan error `404`.
+- GitHub Actions menjalankan tests sebelum membangun Docker image.
+- Data telemetri masih statis, belum terhubung ke sensor fisik maupun database.
 
-### Backend / API
-- Python 3.10
-- FastAPI
-- Uvicorn
+## 📝 Step-by-Step Perjalanan Pengerjaan
 
-### Testing / QA
-- Pytest
-- TestClient
-- HTTPX
+Berikut rangkuman proses pengembangan dari repository lokal hingga workflow CI berjalan. Perintah setup menggunakan Windows CMD, kecuali jika disebutkan lain.
 
-### DevOps / Containerization
-- Docker
-- GitHub Actions
-- Ubuntu Linux runner
+### Step 1: Inisialisasi repository Git
 
-## Features & Highlights
+Saya membuka folder proyek dan menginisialisasi Git:
 
-- Industrial telemetry endpoints:
-  - `GET /`
-  - `GET /telemetry/{device_id}`
-- Automated QA validation for API health checks and 404 error handling
-- Lightweight containerization using `python:3.10-slim`
-- CI/CD pipeline powered by GitHub Actions to run tests and build the Docker image automatically on push events
-- Simple architecture suitable for learning, prototyping, and extension to real industrial monitoring systems
+```bat
+cd C:\Users\Helmi\devops-cicd-pipeline
+git init
+git branch -M main
+```
 
-## My Learning Journey
+### Step 2: Membuat virtual environment dan memasang dependency
 
-### Phase 1: Initialization and Windows Environment Setup
-I started from a blank repository and configured the project environment on Windows using Python Launcher (`py`) to ensure compatibility and smoother local development. This included preparing the project structure, repository initialization, and dependency management setup.
+Saya menggunakan Python Launcher (`py`) untuk membuat environment dan memasang paket aplikasi serta testing:
 
-### Phase 2: FastAPI Telemetry Gateway Development
-I built the API layer as a lightweight industrial telemetry service. The application exposes a base endpoint for status checks and a telemetry endpoint that returns mock device data for a valid device ID.
+```bat
+py -m venv venv
+venv\Scripts\activate
+py -m pip install --upgrade pip
+py -m pip install fastapi uvicorn pytest requests httpx
+py -m pip freeze > requirements.txt
+```
 
-### Phase 3: Automated Test Suite Development
-I implemented automated test cases using Pytest to validate API responses and ensure the application fails gracefully when a device is not found. This phase also involved dependency resolution around `httpx` and FastAPI test tooling.
+`requirements.txt` menyimpan versi paket agar dependency proyek bisa dipasang kembali.
 
-### Phase 4: Dockerization
-A Dockerfile was added to standardize the runtime environment, making the project portable and easier to validate in a containerized workflow.
+### Step 3: Membuat struktur direktori
 
-### Phase 5: GitHub Actions CI/CD Workflow
-I created a CI pipeline in `.github/workflows/ci-cd.yml` to automate the installation of dependencies, execution of tests, and Docker image build on each push to the main branch.
+Saya menyiapkan folder aplikasi, test, dan workflow GitHub Actions:
 
-### Phase 6: Troubleshooting and Iteration
-This stage involved real-world debugging and configuration work, including:
-- adjusting Python execution commands using `py`
-- fixing testing dependencies and package compatibility
-- resolving Git remote configuration issues
-- ensuring the pipeline configuration worked consistently across the repo
+```bat
+mkdir app tests .github\workflows
+```
 
-## Getting Started
+### Step 4: Menulis API, test, Docker, dan workflow
 
-### 1. Clone the repository
+Saya mengisi file proyek sesuai fungsinya:
+
+- `app/main.py`: API FastAPI untuk status layanan dan telemetri simulasi `ESP32_01`.
+- `tests/test_api.py`: test Pytest untuk respons sukses dan error `404`.
+- `dockerfile`: instruksi Docker berbasis `python:3.10-slim`.
+- `.github/workflows/ci-cd.yml`: konfigurasi workflow untuk memasang dependency, menjalankan test, dan membangun Docker image.
+
+### Step 5: Menjalankan test dan troubleshooting
+
+Saya menjalankan suite test dari terminal:
+
+```bat
+py -m pytest tests/
+```
+
+Hasil verifikasi lokal saat ini: **3 passed**. Dalam prosesnya saya juga memastikan dependency `httpx` tersedia untuk FastAPI TestClient.
+
+### Step 6: Menambahkan dokumentasi dan aturan Git
+
+Saya menambahkan `.gitignore` untuk mengabaikan environment lokal seperti `venv/`, bytecode Python, dan cache test. Environment sempat terunggah ke GitHub sebelum dikeluarkan dari versi repository yang aktif dengan:
+
+```bat
+git rm -r --cached venv
+```
+
+Perintah tersebut menghapus `venv/` dari index Git tanpa menghapus environment lokal. Saya juga menambahkan `LICENSE` MIT dan dokumentasi proyek ini.
+
+### Step 7: Menghubungkan repository ke GitHub
+
+Setelah membuat repository GitHub `DevOps-IndustrialCICD-Pipeline`, saya menambahkan remote, membuat commit awal, dan mengirim branch `main`:
+
+```bat
+git add .
+git commit -m "docs & feat: initial commit with API, tests, Docker, and CI/CD workflow"
+git remote add origin https://github.com/zhlsyh/DevOps-IndustrialCICD-Pipeline.git
+git push -u origin main
+```
+
+Perintah `git remote add origin` hanya digunakan saat remote belum dikonfigurasi. Untuk clone yang sudah memiliki remote, periksa dengan `git remote -v` dan gunakan `git push origin main` untuk mengirim perubahan.
+
+## Menjalankan Proyek Secara Lokal
+
+Instruksi berikut mengasumsikan Git, Python 3.10, dan Docker (untuk langkah Docker) sudah tersedia. Jalankan perintah dari terminal.
+
+### 1. Clone repository
 
 ```bash
 git clone https://github.com/Zhlsyh/DevOps-IndustrialCICD-Pipeline.git
 cd DevOps-IndustrialCICD-Pipeline
 ```
 
-### 2. Create a virtual environment and install dependencies
+### 2. Buat virtual environment
 
-#### Windows
+Di Windows, gunakan PowerShell:
+
+```powershell
+py -3.10 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+Jika menggunakan Command Prompt:
+
+```bat
+py -3.10 -m venv .venv
+.\.venv\Scripts\activate.bat
+```
+
+Di Linux atau macOS:
+
 ```bash
-py -m venv .venv
-.venv\Scripts\activate
+python3.10 -m venv .venv
+source .venv/bin/activate
+```
+
+Setelah aktivasi, prompt terminal biasanya menampilkan nama environment `.venv`.
+
+### 3. Pasang dependency
+
+Di Windows:
+
+```powershell
 py -m pip install --upgrade pip
 py -m pip install -r requirements.txt
 ```
 
-#### Linux / macOS
+Di Linux atau macOS:
+
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-### 3. Run automated tests
+### 4. Jalankan automated tests
 
-```bash
+Di Windows:
+
+```powershell
 py -m pytest tests/
 ```
 
-### 4. Run the API locally
+Di Linux atau macOS:
 
 ```bash
+python -m pytest tests/
+```
+
+Pytest akan menampilkan ringkasan test yang berhasil atau gagal di terminal.
+
+### 5. Jalankan API
+
+Di Windows:
+
+```powershell
 py -m uvicorn app.main:app --reload
 ```
 
-Then open:
-- http://127.0.0.1:8000/
-- http://127.0.0.1:8000/docs
-
-### 5. Build and run with Docker
+Di Linux atau macOS:
 
 ```bash
-docker build -t industrial-telemetry-api:latest .
-docker run -p 8000:8000 industrial-telemetry-api:latest
+python -m uvicorn app.main:app --reload
 ```
 
-## Project Structure
+Saat server berjalan, coba endpoint berikut dari browser:
+
+- API status: http://127.0.0.1:8000/
+- Dokumentasi interaktif: http://127.0.0.1:8000/docs
+- Telemetri device: http://127.0.0.1:8000/telemetry/ESP32_01
+
+Untuk menghentikan server, tekan `Ctrl+C` di terminal.
+
+### 6. Build dan jalankan dengan Docker
+
+File Docker di repository saat ini bernama `dockerfile` (huruf kecil), jadi gunakan opsi `-f`:
+
+```bash
+docker build -f dockerfile -t industrial-telemetry-api:latest .
+docker run --rm -p 8000:8000 industrial-telemetry-api:latest
+```
+
+Setelah container berjalan, buka http://127.0.0.1:8000/docs. Opsi `--rm` akan menghapus container setelah dihentikan. Tekan `Ctrl+C` untuk menghentikannya.
+
+## Endpoint API
+
+### `GET /`
+
+Memeriksa status API.
+
+Contoh respons:
+
+```json
+{
+  "status": "online",
+  "message": "Industrial IoT Gateway active"
+}
+```
+
+### `GET /telemetry/{device_id}`
+
+Mengambil data telemetri simulasi untuk device yang didukung.
+
+Contoh request:
+
+```text
+GET /telemetry/ESP32_01
+```
+
+Contoh respons:
+
+```json
+{
+  "device_id": "ESP32_01",
+  "temperature": 28.5,
+  "status": "PASS"
+}
+```
+
+Untuk device ID yang tidak dikenal, API mengembalikan HTTP `404` dengan detail `Device not found`.
+
+## 📁 Struktur Direktori Repository
 
 ```text
 .
@@ -141,43 +281,21 @@ docker run -p 8000:8000 industrial-telemetry-api:latest
 │   └── test_api.py
 ├── .gitignore
 ├── dockerfile
+├── LICENSE
 ├── README.md
-├── requirements.txt
-└── venv/
+└── requirements.txt
 ```
 
-## API Endpoints
-
-### `GET /`
-Returns the service status.
-
-Example response:
-```json
-{
-  "status": "online",
-  "message": "Industrial IoT Gateway active"
-}
-```
-
-### `GET /telemetry/{device_id}`
-Returns telemetry data for a valid device ID.
-
-Example response:
-```json
-{
-  "device_id": "ESP32_01",
-  "temperature": 28.5,
-  "status": "PASS"
-}
-```
+Virtual environment lokal (`.venv/` atau `venv/`) tidak disertakan dalam repository karena diabaikan oleh `.gitignore`.
 
 ## Author
 
-- GitHub: [Zhlsyh](https://github.com/Zhlsyh)
+**Zhlsyh**
 
-This project is part of my portfolio journey focused on the intersection of software engineering, QA automation, and DevOps practices. It reflects my interest in building reliable systems, automating validation, and improving deployment quality through modern engineering workflows.
+GitHub: [github.com/Zhlsyh](https://github.com/Zhlsyh)
+
+Proyek ini merupakan bagian dari portofolio saya dalam integrasi Software Engineering, QA Automation, dan DevOps, dengan latar belakang Teknik Elektronika Industri.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
-"# DevOps-IndustrialCICD-Pipeline" 
+Proyek ini menggunakan lisensi [MIT](LICENSE).

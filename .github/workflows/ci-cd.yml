@@ -30,4 +30,4 @@ jobs:
 
     - name: Build Docker Image
       run: |
-        docker build -t industrial-telemetry-api:latest .
+        docker build -f dockerfile -t industrial-telemetry-api:latest .
